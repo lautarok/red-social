@@ -1,0 +1,22 @@
+<form class='form' [formGroup]='form' (ngSubmit)='handleSubmit()'>
+	<app-text-field
+		icon='mention'
+		label='Correo electrónico'
+		type='email'
+		formControlName='email'
+	/>
+	<app-text-field
+		icon='key'
+		label='Contraseña'
+		type='password'
+		formControlName='password'
+	/>
+	<app-button [disabled]='isDisabled()' [loading]='loading' variant='primary' style='margin-top: 10px;' type='submit'>
+		<span>Continuar</span>
+		<app-icon set='arrow right' size='16px' />
+	</app-button>
+</form>
+<app-dialog [show]='showError'>
+	<p>{{error}}</p>
+	<app-button variant='primary' (click)='showError = false'>Reintentar</app-button>
+</app-dialog>

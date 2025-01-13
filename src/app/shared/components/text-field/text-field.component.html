@@ -1,0 +1,18 @@
+<div class='field' (click)='focusInput()'>
+	<p class='label'>{{label()}}</p>
+	<div class='box'>
+		@let iconSet = icon();
+		@if (iconSet) {
+			<app-icon
+				[set]='iconSet'
+				size='16px'
+			/>
+		}
+		<input
+			#input
+			[type]='type()'
+			autocomplete='off'
+			(input)='onInput($event)'
+		/>
+	</div>
+</div>

@@ -1,0 +1,61 @@
+@use '../../../../variables'
+	
+.button
+	position: relative
+	width: 100%
+	height: 50px
+	color: variables.$primary-color
+	background-color: rgba(variables.$primary-color, 5%)
+	font-family: inherit
+	border-radius: 6px
+	cursor: pointer
+	transition: background-color ease .2s, opacity ease .2s
+	user-select: none
+
+.button.loading,
+.button.disabled
+	cursor: context-menu
+	opacity: .5
+
+.button.primary
+	color: variables.$primary-color-foreground
+	background-color: variables.$primary-color
+
+.button > .content
+	display: flex
+	justify-content: center
+	align-items: center
+	font-size: 16px
+	font-weight: 500
+	width: 100%
+	height: 100%
+	opacity: 1
+	gap: 7px
+	transition: opacity ease .2s .2s
+
+.button.loading > .content
+	opacity: 0
+	transition: opacity ease .2s
+
+.button > .loader
+	width: 100%
+	height: 100%
+	position: absolute
+	top: 0
+	left: 0
+	display: flex
+	justify-content: center
+	align-items: center
+	opacity: 0
+	transition: opacity ease .2s
+
+.button.loading > .loader
+	transition: opacity ease .2s .2s
+	opacity: 1
+
+@media (hover: hover) and (pointer: fine)
+	.button:not(.primary, .disabled, .loading):hover
+		background-color: rgba(variables.$primary-color, 8%)
+	
+	.button.primary:not(.disabled, .loading):hover
+		background-color: rgba(variables.$primary-color, 70%)
