@@ -1,5 +1,5 @@
-<div [class]='["dialog", show() ? "show" : ""]'>
-	<div class='box'>
+<div [class]='["dialog", show ? "show" : ""]'>
+	<div class='box' [style]='{width}'>
 		<ng-content />
 	</div>
 </div>

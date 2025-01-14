@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-button',
@@ -7,8 +7,10 @@ import { Component, input } from '@angular/core';
   styleUrl: './button.component.sass'
 })
 export class ButtonComponent {
-  variant = input<'primary'>()
-  type = input<string>('button')
-  loading = input(false)
-  disabled = input(false)
+  @Input() variant?: 'primary'
+  @Input() type = 'button'
+  @Input() loading = false
+  @Input() disabled = false
+  @Input() width?: string
+  @Input() rounded = false
 }

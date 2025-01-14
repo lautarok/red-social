@@ -11,12 +11,12 @@
 		type='password'
 		formControlName='password'
 	/>
-	<app-button [disabled]='isDisabled()' [loading]='loading' variant='primary' style='margin-top: 10px;' type='submit'>
+	<app-button [disabled]='isDisabled' [loading]='loading' variant='primary' style='margin-top: 10px;' type='submit'>
 		<span>Continuar</span>
 		<app-icon set='arrow right' size='16px' />
 	</app-button>
 </form>
 <app-dialog [show]='showError'>
-	<p>{{error}}</p>
+	<p>{{error}}.</p>
 	<app-button variant='primary' (click)='showError = false'>Reintentar</app-button>
 </app-dialog>

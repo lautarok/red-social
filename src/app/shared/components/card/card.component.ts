@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 
 @Component({
   selector: 'app-card',
@@ -7,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './card.component.sass'
 })
 export class CardComponent {
-
+  @Input() width?: string
+  @Input() height?: string
+  @Input() padding?: string
 }

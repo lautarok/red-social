@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MentionComponent } from "./mention/mention.component";
 import { ArrowRightComponent } from './arrow-right/arrow-right.component';
 import { KeyComponent } from './key/key.component';
@@ -10,6 +10,6 @@ import { KeyComponent } from './key/key.component';
   styleUrl: './icon.component.sass'
 })
 export class IconComponent {
-  set = input.required<string>()
-  size = input<string>()
+  @Input() set!: string
+  @Input() size?: string
 }

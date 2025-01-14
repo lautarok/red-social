@@ -1,18 +1,18 @@
 <div class='field' (click)='focusInput()'>
-	<p class='label'>{{label()}}</p>
+	<p class='label'>{{label}}</p>
 	<div class='box'>
-		@let iconSet = icon();
-		@if (iconSet) {
+		@if (icon) {
 			<app-icon
-				[set]='iconSet'
+				[set]='icon'
 				size='16px'
 			/>
 		}
 		<input
 			#input
-			[type]='type()'
+			[type]='type'
 			autocomplete='off'
 			(input)='onInput($event)'
+			[(ngModel)]='value'
 		/>
 	</div>
 </div>

@@ -1,0 +1,43 @@
+<form class='form' [formGroup]='form' (ngSubmit)='handleSubmit()'>
+	<app-text-field
+		label='Nombre'
+		type='text'
+		formControlName='givenName'
+	/>
+	<app-text-field
+		label='Apellido'
+		type='text'
+		formControlName='familyName'
+	/>
+	<app-text-field
+		style='grid-column: 1 / span 2;'
+		label='Correo electrónico'
+		icon='mention'
+		type='email'
+		formControlName='email'
+	/>
+	<app-text-field
+		label='Contraseña'
+		type='password'
+		formControlName='password'
+	/>
+	<app-text-field
+		label='Repetir contraseña'
+		type='password'
+		formControlName='repeatPassword'
+	/>
+	<app-button
+		[disabled]='isDisabled'
+		[loading]='loading'
+		variant='primary'
+		style='grid-column: 1 / span 2; margin-top: 10px;'
+		type='submit'
+	>
+		<span>Crear cuenta</span>
+		<app-icon size='16' set='arrow right' />
+	</app-button>
+</form>
+<app-dialog [show]='showError'>
+	<p>{{error}}.</p>
+	<app-button variant='primary' (click)='showError = false'>Reintentar</app-button>
+</app-dialog>

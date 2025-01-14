@@ -1,0 +1,21 @@
+<app-dialog [show]='show' width='420px'>
+	<p>Iniciar una conversación</p>
+	<form class='add-contact-form' [formGroup]='form' (ngSubmit)='handleSubmit()'>
+		<app-text-field
+			label='Correo electrónico'
+			icon='mention'
+			formControlName='email'
+		/>
+		<nav>
+			<app-button [disabled]='loading' (click)='showChange.emit(false)'>Cancelar</app-button>
+			<app-button variant='primary' [loading]='loading' [disabled]='isDisabled' type='submit'>
+				<span>Continuar</span>
+				<app-icon set='arrow right' size='16px' />
+			</app-button>
+		</nav>
+	</form>
+</app-dialog>
+<app-dialog [show]='showError'>
+	<p>{{error}}.</p>
+	<app-button variant='primary' (click)='showError = false'>Reintentar</app-button>
+</app-dialog>

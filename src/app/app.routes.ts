@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
+import { noAuthGuard } from './core/guard/no-auth.guard';
+import { authGuard } from './core/guard/auth.guard';
 
 export const routes: Routes = [
 	{
 		path: 'auth',
+		canActivate: [noAuthGuard],
 		loadChildren: () => 
 				import("./features/auth/pages/auth.routes").then(m => m.routes)
 	},
@@ -10,21 +13,22 @@ export const routes: Routes = [
 		path: '',
 		loadComponent: () =>
 			import('./shared/components/frame/frame.component').then(m => m.FrameComponent),
+		canActivate: [authGuard],
 		children: [
 			{
-				path: 'feed',
+				path: 'chat',
 				loadChildren: () =>
-					import('./features/posts/pages/posts.routes').then(m => m.routes)
+					import('./features/chat/pages/chat.routes').then(m => m.routes)
 			},
 			{
 				path: '**',
-				redirectTo: 'feed'
+				redirectTo: 'chat'
 			}
 		]
 	},
 	{
 		path: '**',
 		pathMatch: 'full',
-		redirectTo: 'auth'
+		redirectTo: ''
 	}
 ];

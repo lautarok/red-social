@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-dialog',
@@ -7,5 +7,6 @@ import { Component, input } from '@angular/core';
   styleUrl: './dialog.component.sass'
 })
 export class DialogComponent {
-  show = input.required<boolean>()
+  @Input() show!: boolean
+  @Input() width?: string
 }

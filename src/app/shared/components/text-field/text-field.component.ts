@@ -1,4 +1,4 @@
-import { Component, ElementRef, forwardRef, input, viewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, Input, input, viewChild } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -16,9 +16,9 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
   ]
 })
 export class TextFieldComponent implements ControlValueAccessor {
-  label = input.required<string>()
-  icon = input<string>()
-  type = input<string>('text')
+  @Input() label!: string
+  @Input() icon?: string
+  @Input() type = 'text'
 
   inputElement = viewChild.required<ElementRef<HTMLInputElement>>('input')
 

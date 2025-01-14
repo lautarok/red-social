@@ -1,12 +1,13 @@
 <button
 	[class]='[
 		"button",
-		variant(),
-		loading() ? "loading" : "",
-		disabled() ? "disabled" : ""
+		variant,
+		loading ? "loading" : "",
+		disabled ? "disabled" : "",
+		rounded ? "rounded" : ""
 	]'
-	[type]='type()'
-	[disabled]='disabled()'
+	[type]='type'
+	[disabled]='disabled'
 >
 	<div class='content'>
 		<ng-content />

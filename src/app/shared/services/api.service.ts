@@ -43,4 +43,11 @@ export class ApiService {
       method: 'POST'
     })
   }
+
+  put<T>(path: string, body: Record<string, unknown>) {
+    return this.api<T>(path, {
+      body,
+      method: 'PUT'
+    })
+  }
 }
