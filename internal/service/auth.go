@@ -1,12 +1,14 @@
 package service
 
 import (
+	"log"
 	"os"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lautarok/yorcom/internal/domain"
 	"github.com/lautarok/yorcom/internal/repository"
 	"github.com/lautarok/yorcom/pkg/errors"
+	"github.com/lautarok/yorcom/pkg/util"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,6 +20,19 @@ func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 	return &AuthService{
 		userRepository: userRepository,
 	}
+}
+
+func (service *AuthService) generateToken(email string) (string, error) {
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+	})
+
+	token, err := jwtToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		return token, err
+	}
+
+	return token, nil
 }
 
 func (service *AuthService) Login(email string, password string) (string, error) {
@@ -35,13 +50,35 @@ func (service *AuthService) Login(email string, password string) (string, error)
 		return token, errors.InvalidPassword
 	}
 
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": user.Email,
+	token, err = service.generateToken(user.Email)
+
+	return token, nil
+}
+
+func (service *AuthService) SignUp(email string, password string, givenName string, familyName string) (string, error) {
+	var token string
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = service.userRepository.CreateUser(&domain.User{
+		Email:      email,
+		Password:   string(passwordHash),
+		FamilyName: util.Capitalize(familyName),
+		GivenName:  util.Capitalize(givenName),
 	})
 
-	token, err = jwtToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
-	if err != nil {
+	if err == errors.UserAlreadyExists {
 		return token, err
+	} else if err != nil {
+		log.Fatal(err)
+	}
+
+	token, err = service.generateToken(email)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return token, nil

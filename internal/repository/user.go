@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/lautarok/yorcom/internal/domain"
+	"github.com/lautarok/yorcom/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -36,5 +38,13 @@ func (repository *UserRepository) GetByEmail(email string, user *domain.User) {
 
 func (repository *UserRepository) CreateUser(user *domain.User) error {
 	_, err := repository.db.NewInsert().Model(user).Exec(context.Background())
-	return err
+
+	if err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
+			return errors.UserAlreadyExists
+		}
+		return err
+	}
+
+	return nil
 }
