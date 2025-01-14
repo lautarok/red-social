@@ -1,0 +1,14 @@
+{{myUser?.givenName}}
+@if (conversations) {
+	<div class='conversation-list'>
+		@for (conversation of conversations; track $index) {
+			<app-conversation-card
+				[conversation]='conversation'
+			/>
+		}
+	</div>
+} @else {
+	<div class='center'>
+		<app-loader [size]='50' />
+	</div>
+}

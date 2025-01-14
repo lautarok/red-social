@@ -1,0 +1,19 @@
+<aside class='aside-menu'>
+	<button class='my-user' (click)='showMyUserDialog = true'>
+		@if (myUser) {
+			<span>{{myUser.givenName[0] + myUser.familyName[0]}}</span>
+		}
+	</button>
+</aside>
+@if (myUser) {
+	<app-dialog [show]='showMyUserDialog' width='400px'>
+		<div>
+			<p>{{myUser.givenName}} {{myUser.familyName}}</p>
+			<p>{{myUser.email}}</p>
+		</div>
+		<nav class='my-user-dialog-nav'>
+			<app-button>Cerrar sesión</app-button>
+			<app-button (click)='showMyUserDialog = false' style='width: 100%;' variant='primary'>Aceptar</app-button>
+		</nav>
+	</app-dialog>
+}

@@ -1,21 +1,17 @@
 <div class='layout'>
-	<app-card width='100%' height='100%' padding='10px'>
-		<div class='conversations'>
-			<app-conversation-card />
+	<div class='conversations'>
+		<app-conversation-list />
+	</div>
+	@if (!conversation) {
+		<div class='start'>
+			<h1>Empieza a chatear ahora!</h1>
+			<app-button
+				width='fit-content'
+				[rounded]='true'
+				variant='primary'
+				(click)='showAddConversation = true'
+			>Iniciar conversación</app-button>
 		</div>
-	</app-card>
-	<app-card width='100%' height='100%' padding='10px'>
-		@if (!conversation) {
-			<div class='start'>
-				<h1>Empieza a chatear ahora!</h1>
-				<app-button
-					width='fit-content'
-					[rounded]='true'
-					variant='primary'
-					(click)='showAddConversation = true'
-				>Iniciar conversación</app-button>
-			</div>
-		}
-	</app-card>
+	}
 </div>
 <app-add-conversation-dialog [(show)]='showAddConversation' />

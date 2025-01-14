@@ -46,4 +46,8 @@ export class AuthService {
       throw error
     }
   }
+
+  getMyUser() {
+    return this.apiService.get<User>('user/me')
+  }
 }

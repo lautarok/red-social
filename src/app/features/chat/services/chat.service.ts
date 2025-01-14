@@ -14,4 +14,8 @@ export class ChatService {
       email: peopleEmail
     })
   }
+
+  getConversationList() {
+    return this.apiService.get<Conversation[]>('conversation')
+  }
 }

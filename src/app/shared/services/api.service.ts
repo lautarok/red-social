@@ -25,9 +25,6 @@ export class ApiService {
         options?.method || 'GET', environment.apiUrl + '/' + path, options
       ).pipe(
         catchError((error: HttpErrorResponse) => {
-          // if (error.status === 401) {
-          //   this.logout()
-          // }
           reject(error)
           return throwError(() => new Error(error.message))
         })
@@ -49,5 +46,9 @@ export class ApiService {
       body,
       method: 'PUT'
     })
+  }
+
+  get<T>(path: string) {
+    return this.api<T>(path)
   }
 }

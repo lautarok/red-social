@@ -8,9 +8,13 @@ export const routes: Routes = [
 					conversation: new UrlSegment(url[0].path, {})
 				}}
 			}
-			return {consumed: url}
+			return url.length === 0 ? {consumed: url} : null
 		},
 		loadComponent: () =>
 			import('./inbox/inbox.component').then(m => m.InboxComponent)
+	},
+	{
+		path: '**',
+		redirectTo: ''
 	}
 ]

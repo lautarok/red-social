@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { HeaderComponent } from "../header/header.component";
 import { RouterOutlet } from '@angular/router';
+import { AsideMenuComponent } from "../aside-menu/aside-menu.component";
 
 @Component({
   selector: 'app-frame',
-  imports: [HeaderComponent, RouterOutlet],
+  imports: [RouterOutlet, AsideMenuComponent],
   templateUrl: './frame.component.html',
   styleUrl: './frame.component.sass'
 })
