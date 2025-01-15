@@ -25,6 +25,7 @@ func InitDatabase() *bun.DB {
 
 	db.RegisterModel((*domain.UserConversation)(nil))
 	db.NewCreateTable().IfNotExists().Model((*domain.User)(nil)).Exec(context.Background())
+	db.NewCreateTable().IfNotExists().Model((*domain.UserConversation)(nil)).Exec(context.Background())
 	db.NewCreateTable().IfNotExists().Model((*domain.Conversation)(nil)).Exec(context.Background())
 	db.NewCreateTable().IfNotExists().Model((*domain.Message)(nil)).Exec(context.Background())
 

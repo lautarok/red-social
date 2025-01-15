@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 
@@ -34,16 +33,16 @@ func (middleware *AuthMiddleware) IsUser(next fiber.Handler) fiber.Handler {
 			return nil
 		}
 
-		var email string
+		var id int64
 		token, _, err = new(jwt.Parser).ParseUnverified(authToken, jwt.MapClaims{})
 		if err != nil {
 			c.SendStatus(http.StatusUnauthorized)
 			return nil
 		} else if claims, ok := token.Claims.(jwt.MapClaims); ok {
-			email = fmt.Sprint(claims["email"])
+			id = int64(claims["id"].(float64))
 		}
 
-		c.Locals("auth_user_email", email)
+		c.Locals("auth_user_id", id)
 
 		next(c)
 		return nil

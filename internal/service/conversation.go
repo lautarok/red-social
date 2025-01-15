@@ -16,13 +16,8 @@ func NewConversationService(repository *repository.ConversationRepository) *Conv
 	}
 }
 
-func (service *ConversationService) CreateConversation(userAEmail string, userBEmail string) (int64, error) {
+func (service *ConversationService) CreateConversation(userIds ...int64) (int64, error) {
 	var conversationId int64
-
-	userIds, err := service.repository.GetIDsByEmails(userAEmail, userBEmail)
-	if err != nil {
-		return conversationId, err
-	}
 
 	if len(userIds) < 2 {
 		return conversationId, errors.UserNotFound
@@ -49,4 +44,21 @@ func (service *ConversationService) CreateConversation(userAEmail string, userBE
 	service.repository.AppendUsersToConversation(conversationId, userIds...)
 
 	return conversationId, err
+}
+
+func (service *ConversationService) GetConversationList(userId int64) ([]domain.Conversation, error) {
+	var conversationList []domain.Conversation
+
+	err := service.repository.GetConversationList(userId, &conversationList)
+	if err != nil {
+		return conversationList, err
+	}
+
+	return conversationList, nil
+}
+
+func (service *ConversationService) GetConversation(id int64) (domain.Conversation, error) {
+	var conversation domain.Conversation
+	err := service.repository.GetByID(id, &conversation)
+	return conversation, err
 }

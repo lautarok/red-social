@@ -16,13 +16,24 @@ func InitHttpRoutes(router fiber.Router, db *bun.DB) {
 	authMiddleware := middleware.NewAuthMiddleware()
 	userRepository := repository.NewUserRepository(db)
 	conversationRepository := repository.NewConversationRepository(db)
+	messageRepository := repository.NewMessageRepository(db)
 	conversationService := service.NewConversationService(conversationRepository)
 	authService := service.NewAuthService(userRepository)
+	userService := service.NewUserService(userRepository)
+	messageService := service.NewMessageService(messageRepository)
 	conversationController := controller.NewConversationController(conversationService)
-
 	authController := controller.NewAuthController(authService)
+	userController := controller.NewUserController(userService)
+	messageController := controller.NewMessageController(messageService)
+
 	router.Post("auth", authController.Login)
 	router.Put("auth/sign-up", authController.SignUp)
 
+	router.Get("user/me", authMiddleware.IsUser(userController.GetMyUser))
+
 	router.Post("conversation", authMiddleware.IsUser(conversationController.CreateConversation))
+	router.Get("conversation", authMiddleware.IsUser(conversationController.GetConversationList))
+	router.Get("conversation/:id", authMiddleware.IsUser(conversationController.GetConversation))
+
+	router.Post("message", authMiddleware.IsUser(messageController.SendMessage))
 }

@@ -15,6 +15,8 @@ func NewUserService(repository *repository.UserRepository) *UserService {
 	}
 }
 
-func (service *UserService) GetUserList() ([]domain.User, error) {
-	return service.repository.GetUserList()
+func (service *UserService) GetUserByID(id int64) domain.User {
+	var user domain.User
+	service.repository.GetByID(id, &user)
+	return user
 }

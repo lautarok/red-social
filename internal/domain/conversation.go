@@ -10,8 +10,8 @@ import (
 type Conversation struct {
 	ID        int64      `bun:",pk,autoincrement" json:"id"`
 	Name      string     `json:"name"`
-	Users     []User     `bun:"m2m:user_conversations,join:Conversation=User"`
-	Messages  []*Message `bun:"rel:has-many,join:id=conversation_id"`
+	Users     []User     `bun:"m2m:user_conversations,join:Conversation=User" json:"users"`
+	Messages  []*Message `bun:"rel:has-many,join:id=conversation_id" json:"messages"`
 	CreatedAt time.Time  `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
 	UpdatedAt time.Time  `bun:",nullzero,notnull,default:current_timestamp" json:"updatedAt"`
 }

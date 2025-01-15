@@ -22,9 +22,10 @@ func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 	}
 }
 
-func (service *AuthService) generateToken(email string) (string, error) {
+func (service *AuthService) generateToken(email string, id int64) (string, error) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": email,
+		"id":    id,
 	})
 
 	token, err := jwtToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
@@ -50,7 +51,7 @@ func (service *AuthService) Login(email string, password string) (string, error)
 		return token, errors.InvalidPassword
 	}
 
-	token, err = service.generateToken(user.Email)
+	token, err = service.generateToken(user.Email, user.ID)
 
 	return token, nil
 }
@@ -63,7 +64,7 @@ func (service *AuthService) SignUp(email string, password string, givenName stri
 		log.Fatal(err)
 	}
 
-	err = service.userRepository.CreateUser(&domain.User{
+	id, err := service.userRepository.CreateUser(&domain.User{
 		Email:      email,
 		Password:   string(passwordHash),
 		FamilyName: util.Capitalize(familyName),
@@ -76,7 +77,7 @@ func (service *AuthService) SignUp(email string, password string, givenName stri
 		log.Fatal(err)
 	}
 
-	token, err = service.generateToken(email)
+	token, err = service.generateToken(email, id)
 	if err != nil {
 		log.Fatal(err)
 	}

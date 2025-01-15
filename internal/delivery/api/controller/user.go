@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/lautarok/yorcom/internal/service"
 )
@@ -15,20 +17,11 @@ func NewUserController(service *service.UserService) *UserController {
 	}
 }
 
-func (controller *UserController) GetUserList(c *fiber.Ctx) error {
-	user_list, err := controller.service.GetUserList()
-	if err != nil {
-		c.Status(500)
-		c.JSON(map[string]string{
-			"error": "internal error",
-		})
-		return err
-	}
+func (controller *UserController) GetMyUser(c *fiber.Ctx) error {
+	myUser := controller.service.GetUserByID(c.Locals("auth_user_id").(int64))
 
-	c.Status(200)
-	c.JSON(map[string]interface{}{
-		"userList": user_list,
-	})
+	c.Status(http.StatusOK)
+	c.JSON(myUser)
 
 	return nil
 }

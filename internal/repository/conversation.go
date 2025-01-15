@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"log"
 
 	"github.com/lautarok/yorcom/internal/domain"
+	"github.com/lautarok/yorcom/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -16,27 +18,6 @@ func NewConversationRepository(db *bun.DB) *ConversationRepository {
 	return &ConversationRepository{
 		db: db,
 	}
-}
-
-func (repository *ConversationRepository) GetIDsByEmails(emails ...string) ([]int64, error) {
-	var ids []int64
-	var users []domain.User
-
-	err := repository.db.NewSelect().
-		Column("id").
-		Model(&users).
-		Where("email in (?)", bun.In(emails)).
-		Scan(context.Background())
-
-	if err != nil {
-		return ids, err
-	}
-
-	for _, u := range users {
-		ids = append(ids, u.ID)
-	}
-
-	return ids, nil
 }
 
 func (repository *ConversationRepository) ConversationExists(userIds ...int64) (bool, error) {
@@ -91,4 +72,28 @@ func (repository *ConversationRepository) AppendUsersToConversation(conversation
 	}
 
 	return nil
+}
+
+func (repository *ConversationRepository) GetConversationList(userId int64, conversationList *[]domain.Conversation) error {
+	return repository.db.NewSelect().
+		Model(conversationList).
+		Join("JOIN user_conversations ON user_conversations.conversation_id = conversation.id").
+		Where("user_conversations.user_id = ?", userId).
+		Relation("Users").
+		Scan(context.Background())
+}
+
+func (repository *ConversationRepository) GetByID(id int64, conversation *domain.Conversation) error {
+	err := repository.db.NewSelect().
+		Model(conversation).
+		Where("id = ?", id).
+		Relation("Messages").
+		Relation("Users").
+		Scan(context.Background())
+
+	if err == sql.ErrNoRows {
+		return errors.ConversationNotFound
+	}
+
+	return err
 }

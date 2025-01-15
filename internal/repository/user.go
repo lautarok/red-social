@@ -19,10 +19,15 @@ func NewUserRepository(db *bun.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (repository *UserRepository) GetUserList() ([]domain.User, error) {
-	var userList []domain.User
-	err := repository.db.NewSelect().Model(&userList).Scan(context.Background())
-	return userList, err
+func (repository *UserRepository) GetByID(id int64, user *domain.User) {
+	err := repository.db.NewSelect().
+		Model(user).
+		Where("id = ?", id).
+		Scan(context.Background())
+
+	if err != sql.ErrNoRows && err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (repository *UserRepository) GetByEmail(email string, user *domain.User) {
@@ -36,15 +41,22 @@ func (repository *UserRepository) GetByEmail(email string, user *domain.User) {
 	}
 }
 
-func (repository *UserRepository) CreateUser(user *domain.User) error {
-	_, err := repository.db.NewInsert().Model(user).Exec(context.Background())
+func (repository *UserRepository) CreateUser(user *domain.User) (int64, error) {
+	var insertedId int64
+
+	result, err := repository.db.NewInsert().Model(user).Exec(context.Background())
 
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
-			return errors.UserAlreadyExists
+			return insertedId, errors.UserAlreadyExists
 		}
-		return err
+		return insertedId, err
 	}
 
-	return nil
+	insertedId, err = result.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return insertedId, nil
 }
