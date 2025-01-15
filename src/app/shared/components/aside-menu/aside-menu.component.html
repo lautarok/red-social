@@ -12,7 +12,7 @@
 			<p>{{myUser.email}}</p>
 		</div>
 		<nav class='my-user-dialog-nav'>
-			<app-button>Cerrar sesión</app-button>
+			<app-button (click)='logout()'>Cerrar sesión</app-button>
 			<app-button (click)='showMyUserDialog = false' style='width: 100%;' variant='primary'>Aceptar</app-button>
 		</nav>
 	</app-dialog>

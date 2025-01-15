@@ -12,6 +12,8 @@
 				(click)='showAddConversation = true'
 			>Iniciar conversación</app-button>
 		</div>
+	} @else {
+		<app-conversation [id]='conversation' />
 	}
 </div>
 <app-add-conversation-dialog [(show)]='showAddConversation' />

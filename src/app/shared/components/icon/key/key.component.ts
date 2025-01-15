@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-key',
@@ -7,5 +7,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './key.component.sass'
 })
 export class KeyComponent {
-  size = input<string>()
+  @Input() size?: string
 }

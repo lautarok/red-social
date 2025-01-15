@@ -1,0 +1,32 @@
+@if (conversation) {
+	<div class='conversation'>
+		<div class='top'>
+			<a routerLink='../' class='go-back'>
+				<app-icon set='arrow left' size='16px' />
+			</a>
+			<span>{{conversation.users[0].givenName}} {{conversation.users[0].familyName}}</span>
+		</div>
+		<div class='messages'>
+			<div class='scroll-area' #messagesScroll>
+				<div class='wrapper' #messagesWrapper>
+					@for (message of conversation.messages; track $index) {
+						<div [class]='["message", message.fromUserId === myUser?.id ? "from-me" : ""]'>
+							<div class='box'>
+								<p>{{message.text}}</p>
+								<p>{{message.createdAt}}</p>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<form class='bottom' [formGroup]='form' (ngSubmit)='handleSubmit()'>
+			<input type='text' formControlName='message' />
+			<app-button variant='primary' type='submit'>Enviar</app-button>
+		</form>
+	</div>
+} @else {
+	<div class='center'>
+		<app-loader [size]='50' />
+	</div>
+}

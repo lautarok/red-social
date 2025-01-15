@@ -23,11 +23,17 @@ export class ConversationListComponent {
     this.myUser = await this.authService.getMyUser()
 
     const conversations = await this.chatService.getConversationList()
-    this.conversations = conversations?.map(conversation => {
-      return {
-        ...conversation,
-        users: conversation.users.filter(user => user.id !== this.myUser?.id)
+    if (conversations) {
+      if (conversations.length > 0) {
+        this.conversations = conversations?.map(conversation => {
+          return {
+            ...conversation,
+            users: conversation.users.filter(user => user.id !== this.myUser?.id)
+          }
+        })
+      } else {
+        this.conversations = []
       }
-    })
+    }
   }
 }

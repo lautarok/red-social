@@ -17,6 +17,10 @@ export class AsideMenuComponent {
   myUser?: User
   showMyUserDialog = false
 
+  logout() {
+    this.authService.logout()
+  }
+
   async ngOnInit() {
     this.myUser = await this.authService.getMyUser()
   }

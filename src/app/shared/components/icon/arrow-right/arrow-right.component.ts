@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-arrow-right',
@@ -7,5 +7,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './arrow-right.component.sass'
 })
 export class ArrowRightComponent {
-  size = input<string>()
+  @Input() size?: string
 }

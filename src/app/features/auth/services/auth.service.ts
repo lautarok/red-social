@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../../shared/services/api.service';
 import { Router } from '@angular/router';
+import { cacheMap, pendingRequests } from '../../../core/interceptors/cache.interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +46,13 @@ export class AuthService {
     } catch (error) {
       throw error
     }
+  }
+
+  async logout() {
+    localStorage.removeItem('auth_token')
+    cacheMap.clear()
+    pendingRequests.clear()
+    await this.router.navigate(['auth', 'login'])
   }
 
   getMyUser() {

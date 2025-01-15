@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 
 @Component({
   selector: 'app-mention',
@@ -7,5 +7,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './mention.component.sass'
 })
 export class MentionComponent {
-  size = input<string>()
+  @Input() size?: string
 }

@@ -1,0 +1,115 @@
+.conversation
+	width: 100%
+	height: 100vh
+	position: relative
+	display: grid
+	grid-template-columns: 1fr
+	grid-template-rows: auto 1fr auto
+
+.center
+	width: 100%
+	height: 100%
+	display: flex
+	justify-content: center
+	align-items: center
+
+.conversation > .top
+	width: 100%
+	height: fit-content
+	padding: 15px
+	background-color: #111
+	border-bottom: solid 1px #222
+	display: flex
+	align-items: center
+	font-size: 16px
+	gap: 15px
+
+.conversation > .top > .go-back
+	width: 40px
+	height: 40px
+	display: flex
+	justify-content: center
+	align-items: center
+	color: #FFF
+	transition: background-color ease .2s
+	border-radius: 50%
+
+.messages
+	width: 100%
+	height: 100%
+	padding: 0 15px
+	overflow: hidden
+
+.messages > .scroll-area
+	width: 100%
+	height: 100%
+	overflow-y: scroll
+
+.messages > .scroll-area > .wrapper
+	width: 100%
+	height: fit-content
+	display: flex
+	flex-direction: column
+	padding: 15px 0
+	padding-right: 15px
+	gap: 15px
+
+.messages > .scroll-area > .wrapper > .message
+	width: 100%
+	height: fit-content
+	display: flex
+
+.messages > .scroll-area > .wrapper > .message.from-me
+	justify-content: flex-end
+
+.messages > .scroll-area > .wrapper > .message > .box
+	width: fit-content
+	max-width: 70%
+	background-color: #222
+	border-radius: 6px
+	display: flex
+	flex-direction: column
+	gap: 4px
+	padding: 15px
+	white-space: normal
+	word-break: break-all
+	overflow: hidden
+
+.messages > .scroll-area > .wrapper > .message.from-me > .box
+	background-color: #111
+	border: solid 1px #222
+
+.messages > .scroll-area > .wrapper > .message > .box > p:first-child
+	font-size: 16px
+
+.messages > .scroll-area > .wrapper > .message > .box > p:last-child
+	font-size: 14px
+	opacity: .7
+
+.messages > .scroll-area > .wrapper > .message.from-me > .box > p:last-child
+	text-align: right
+
+.bottom
+	width: 100%
+	height: fit-content
+	padding: 15px
+	display: grid
+	grid-template-columns: 1fr auto
+	gap: 10px
+	background-color: #111
+	border-top: solid 1px #222
+
+.bottom > input
+	width: 100%
+	height: 50px
+	background-color: #000
+	border: solid 1px #222
+	border-radius: 6px
+	padding: 0 15px
+	color: #FFF
+	font-size: 16px
+	font-family: inherit
+
+@media (hover: hover) and (pointer: fine)
+	.conversation > .top > .go-back:hover
+		background-color: rgba(255, 255, 255, .15)
