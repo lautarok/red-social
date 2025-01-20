@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +11,7 @@ func NewHealthController() *HealthController {
 }
 
 func (controller *HealthController) GetHealth(c *fiber.Ctx) error {
-	c.Status(http.StatusOK)
+	c.Status(fiber.StatusOK)
 	c.JSON(map[string]string{
 		"service": "backend",
 		"status":  "alive",

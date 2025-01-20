@@ -10,7 +10,7 @@ import (
 type Message struct {
 	ID             int64     `bun:",pk,autoincrement" json:"id"`
 	Text           string    `json:"text"`
-	ConversationID int64     `json:"-"`
+	ConversationID int64     `json:"conversationId"`
 	FromUserID     int64     `json:"fromUserId"`
 	CreatedAt      time.Time `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
 	UpdatedAt      time.Time `bun:",nullzero,notnull,default:current_timestamp" json:"updatedAt"`

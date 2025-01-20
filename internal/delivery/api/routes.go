@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/lautarok/yorcom/internal/delivery/api/controller"
 	"github.com/lautarok/yorcom/internal/delivery/api/middleware"
@@ -9,10 +10,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-func InitHttpRoutes(router fiber.Router, db *bun.DB) {
-	healthController := controller.NewHealthController()
-	router.Get("health/", healthController.GetHealth)
-
+func InitRoutes(router fiber.Router, db *bun.DB) {
 	authMiddleware := middleware.NewAuthMiddleware()
 	userRepository := repository.NewUserRepository(db)
 	conversationRepository := repository.NewConversationRepository(db)
@@ -20,11 +18,16 @@ func InitHttpRoutes(router fiber.Router, db *bun.DB) {
 	conversationService := service.NewConversationService(conversationRepository)
 	authService := service.NewAuthService(userRepository)
 	userService := service.NewUserService(userRepository)
-	messageService := service.NewMessageService(messageRepository)
-	conversationController := controller.NewConversationController(conversationService)
+	messageService := service.NewMessageService(messageRepository, conversationRepository)
+	wsService := service.NewWSService()
+	conversationController := controller.NewConversationController(conversationService, wsService)
 	authController := controller.NewAuthController(authService)
 	userController := controller.NewUserController(userService)
-	messageController := controller.NewMessageController(messageService)
+	messageController := controller.NewMessageController(messageService, wsService)
+	healthController := controller.NewHealthController()
+	wsController := controller.NewWSController(wsService)
+
+	router.Get("health/", healthController.GetHealth)
 
 	router.Post("auth", authController.Login)
 	router.Put("auth/sign-up", authController.SignUp)
@@ -36,4 +39,6 @@ func InitHttpRoutes(router fiber.Router, db *bun.DB) {
 	router.Get("conversation/:id", authMiddleware.IsUser(conversationController.GetConversation))
 
 	router.Post("message", authMiddleware.IsUser(messageController.SendMessage))
+
+	router.Get("ws", authMiddleware.IsUser(websocket.New(wsController.Connect)))
 }

@@ -63,6 +63,7 @@ func (repository *ConversationRepository) AppendUsersToConversation(conversation
 
 		if err != nil {
 			tx.Rollback()
+			return err
 		}
 	}
 
@@ -79,6 +80,7 @@ func (repository *ConversationRepository) GetConversationList(userId int64, conv
 		Model(conversationList).
 		Join("JOIN user_conversations ON user_conversations.conversation_id = conversation.id").
 		Where("user_conversations.user_id = ?", userId).
+		OrderExpr("CASE WHEN last_message_id > 0 THEN last_message_id ELSE id END DESC").
 		Relation("Users").
 		Scan(context.Background())
 }
@@ -87,7 +89,9 @@ func (repository *ConversationRepository) GetByID(id int64, conversation *domain
 	err := repository.db.NewSelect().
 		Model(conversation).
 		Where("id = ?", id).
-		Relation("Messages").
+		Relation("Messages", func(sq *bun.SelectQuery) *bun.SelectQuery {
+			return sq.Order("id ASC").Limit(25)
+		}).
 		Relation("Users").
 		Scan(context.Background())
 
@@ -96,4 +100,22 @@ func (repository *ConversationRepository) GetByID(id int64, conversation *domain
 	}
 
 	return err
+}
+
+func (repository *ConversationRepository) GetUsers(id int64, users *[]domain.User) error {
+	var conversation domain.Conversation
+
+	err := repository.db.NewSelect().
+		Model(&conversation).
+		Where("id = ?", id).
+		Relation("Users").
+		Scan(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	*users = conversation.Users
+
+	return nil
 }

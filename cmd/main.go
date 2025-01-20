@@ -1,6 +1,8 @@
 package main
 
-import "github.com/lautarok/yorcom/internal/infra"
+import (
+	"github.com/lautarok/yorcom/internal/infra"
+)
 
 func main() {
 	infra.InitConfig()

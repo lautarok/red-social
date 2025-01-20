@@ -36,7 +36,7 @@ func InitApi(db *bun.DB) {
 
 	v1_router := router.Group("/api/v1/")
 
-	api.InitHttpRoutes(v1_router, db)
+	api.InitRoutes(v1_router, db)
 
 	log.Fatal(
 		router.Listen(os.Getenv("ADDRESS")),

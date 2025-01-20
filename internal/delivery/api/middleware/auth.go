@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,27 +15,34 @@ func NewAuthMiddleware() *AuthMiddleware {
 
 func (middleware *AuthMiddleware) IsUser(next fiber.Handler) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		authHeaders := c.GetReqHeaders()["Authorization"]
-		if len(authHeaders) == 0 {
-			next(c)
-			return nil
-		}
+		var authToken string
 
-		authHeader := authHeaders[0]
-		authToken := authHeader[len("Bearer "):]
+		authHeaders := c.GetReqHeaders()["Authorization"]
+		if len(authHeaders) > 0 {
+			authHeader := authHeaders[0]
+			authToken = authHeader[len("Bearer "):]
+		} else {
+			authQuery := c.Query("auth_token")
+			if len(authQuery) > 0 {
+				authToken = authQuery
+			} else {
+				next(c)
+				return nil
+			}
+		}
 
 		token, err := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
 		if !token.Valid || err != nil {
-			c.SendStatus(http.StatusUnauthorized)
+			c.SendStatus(fiber.StatusUnauthorized)
 			return nil
 		}
 
 		var id int64
 		token, _, err = new(jwt.Parser).ParseUnverified(authToken, jwt.MapClaims{})
 		if err != nil {
-			c.SendStatus(http.StatusUnauthorized)
+			c.SendStatus(fiber.StatusUnauthorized)
 			return nil
 		} else if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			id = int64(claims["id"].(float64))

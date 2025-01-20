@@ -2,7 +2,6 @@ package controller
 
 import (
 	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,12 +11,14 @@ import (
 )
 
 type ConversationController struct {
-	service *service.ConversationService
+	service   *service.ConversationService
+	wsService *service.WSService
 }
 
-func NewConversationController(service *service.ConversationService) *ConversationController {
+func NewConversationController(service *service.ConversationService, wsService *service.WSService) *ConversationController {
 	return &ConversationController{
-		service: service,
+		service:   service,
+		wsService: wsService,
 	}
 }
 
@@ -27,13 +28,13 @@ func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error
 	}{}
 
 	if err := c.BodyParser(&body); err != nil {
-		c.Status(http.StatusBadRequest)
+		c.Status(fiber.StatusBadRequest)
 		c.JSON(map[string]string{
 			"error": "wrong body",
 		})
 		return nil
 	} else if !util.ValidateID(body.ID) {
-		c.Status(http.StatusBadRequest)
+		c.Status(fiber.StatusBadRequest)
 		c.JSON(map[string]string{
 			"error": "wrong id",
 		})
@@ -42,16 +43,18 @@ func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error
 
 	id, _ := strconv.Atoi(body.ID)
 
-	conversationId, err := controller.service.CreateConversation(c.Locals("auth_user_id").(int64), int64(id))
+	myUserId := c.Locals("auth_user_id").(int64)
+
+	conversationId, err := controller.service.CreateConversation(myUserId, int64(id))
 	if err != nil {
 		if err == errors.UserNotFound {
-			c.Status(http.StatusNotFound)
+			c.Status(fiber.StatusNotFound)
 			c.JSON(map[string]string{
 				"error": err.Error(),
 			})
 			return nil
 		} else if err == errors.ConversationAlreadyExists {
-			c.Status(http.StatusConflict)
+			c.Status(fiber.StatusConflict)
 			c.JSON(map[string]string{
 				"error": err.Error(),
 			})
@@ -62,10 +65,22 @@ func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error
 		}
 	}
 
-	c.Status(http.StatusCreated)
-	c.JSON(map[string]int64{
-		"conversationId": conversationId,
-	})
+	conversation, err := controller.service.GetConversation(conversationId)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	controller.wsService.Notify <- &service.WSNotify{
+		ToUserID: int64(id),
+		Data: map[string]interface{}{
+			"type":         "conversation",
+			"conversation": conversation,
+		},
+	}
+
+	c.Status(fiber.StatusCreated)
+	c.JSON(conversation)
 
 	return nil
 }
@@ -73,18 +88,18 @@ func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error
 func (controller *ConversationController) GetConversationList(c *fiber.Ctx) error {
 	authUserId, ok := c.Locals("auth_user_id").(int64)
 	if !ok {
-		c.SendStatus(http.StatusUnauthorized)
+		c.SendStatus(fiber.StatusUnauthorized)
 		return nil
 	}
 
 	conversationList, err := controller.service.GetConversationList(authUserId)
 	if err != nil {
-		c.SendStatus(http.StatusInternalServerError)
+		c.SendStatus(fiber.StatusInternalServerError)
 		log.Fatal(err)
 		return nil
 	}
 
-	c.Status(http.StatusOK)
+	c.Status(fiber.StatusOK)
 	c.JSON(conversationList)
 
 	return nil
@@ -93,7 +108,7 @@ func (controller *ConversationController) GetConversationList(c *fiber.Ctx) erro
 func (controller *ConversationController) GetConversation(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		c.Status(http.StatusBadRequest)
+		c.Status(fiber.StatusBadRequest)
 		c.JSON(map[string]string{
 			"error": "wrong id param",
 		})
@@ -103,7 +118,7 @@ func (controller *ConversationController) GetConversation(c *fiber.Ctx) error {
 	conversation, err := controller.service.GetConversation(int64(id))
 	if err != nil {
 		if err == errors.ConversationNotFound {
-			c.Status(http.StatusNotFound)
+			c.Status(fiber.StatusNotFound)
 			c.JSON(map[string]string{
 				"error": "conversation not found",
 			})
@@ -114,7 +129,7 @@ func (controller *ConversationController) GetConversation(c *fiber.Ctx) error {
 		}
 	}
 
-	c.Status(http.StatusOK)
+	c.Status(fiber.StatusOK)
 	c.JSON(conversation)
 
 	return nil

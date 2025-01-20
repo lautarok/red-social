@@ -1,18 +1,20 @@
 package controller
 
 import (
-	"net/http"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/lautarok/yorcom/internal/service"
 )
 
 type MessageController struct {
-	service *service.MessageService
+	service   *service.MessageService
+	wsService *service.WSService
 }
 
-func NewMessageController(service *service.MessageService) *MessageController {
-	return &MessageController{service: service}
+func NewMessageController(service *service.MessageService, wsService *service.WSService) *MessageController {
+	return &MessageController{
+		service:   service,
+		wsService: wsService,
+	}
 }
 
 func (controller *MessageController) SendMessage(c *fiber.Ctx) error {
@@ -22,7 +24,7 @@ func (controller *MessageController) SendMessage(c *fiber.Ctx) error {
 	}{}
 
 	if err := c.BodyParser(&body); err != nil {
-		c.Status(http.StatusBadRequest)
+		c.Status(fiber.StatusBadRequest)
 		c.JSON(map[string]string{
 			"error": "wrong body",
 		})
@@ -31,9 +33,21 @@ func (controller *MessageController) SendMessage(c *fiber.Ctx) error {
 
 	fromId := c.Locals("auth_user_id").(int64)
 
-	insertedId := controller.service.SendMessage(fromId, body.ConversationID, body.Message)
+	insertedId, userIds := controller.service.SendMessage(fromId, body.ConversationID, body.Message)
 
-	c.Status(http.StatusCreated)
+	message := controller.service.GetMessage(insertedId)
+
+	for _, userId := range userIds {
+		controller.wsService.Notify <- &service.WSNotify{
+			ToUserID: userId,
+			Data: map[string]interface{}{
+				"type":    "message",
+				"message": message,
+			},
+		}
+	}
+
+	c.Status(fiber.StatusCreated)
 	c.JSON(map[string]int64{
 		"insertedId": insertedId,
 	})

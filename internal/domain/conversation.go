@@ -8,12 +8,14 @@ import (
 )
 
 type Conversation struct {
-	ID        int64      `bun:",pk,autoincrement" json:"id"`
-	Name      string     `json:"name"`
-	Users     []User     `bun:"m2m:user_conversations,join:Conversation=User" json:"users"`
-	Messages  []*Message `bun:"rel:has-many,join:id=conversation_id" json:"messages"`
-	CreatedAt time.Time  `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
-	UpdatedAt time.Time  `bun:",nullzero,notnull,default:current_timestamp" json:"updatedAt"`
+	ID            int64      `bun:",pk,autoincrement" json:"id"`
+	Name          string     `json:"name"`
+	Users         []User     `bun:"m2m:user_conversations,join:Conversation=User" json:"users"`
+	Messages      []*Message `bun:"rel:has-many,join:id=conversation_id" json:"messages"`
+	LastMessage   *Message   `json:"lastMessage"`
+	LastMessageID int64      `json:"-"`
+	CreatedAt     time.Time  `bun:",nullzero,notnull,default:current_timestamp" json:"createdAt"`
+	UpdatedAt     time.Time  `bun:",nullzero,notnull,default:current_timestamp" json:"updatedAt"`
 }
 
 type UserConversation struct {
