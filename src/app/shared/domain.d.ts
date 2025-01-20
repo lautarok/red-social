@@ -4,16 +4,17 @@ declare global {
 		givenName: string,
 		familyName: string,
 		email: string,
-		updatedAt: Date,
-		createdAt: Date
+		updatedAt: string,
+		createdAt: string
 	}
 
 	type Message = {
 		id: number,
 		text: string,
 		fromUserId: number,
-		createdAt: Date,
-		updatedAt: Date
+		conversationId: number,
+		createdAt: string,
+		updatedAt: string
 	}
 
 	type Conversation = {
@@ -21,8 +22,9 @@ declare global {
 		name: string,
 		users: User[],
 		messages: Message[],
-		createdAt: Date,
-		updatedAt: Date
+		lastMessage?: Message,
+		createdAt: string,
+		updatedAt: string
 	}
 }
 

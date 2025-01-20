@@ -16,13 +16,18 @@ export const routes: Routes = [
 		canActivate: [authGuard],
 		children: [
 			{
+				path: 'posts',
+				loadChildren: () =>
+					import('./features/posts/pages/posts.routes').then(m => m.routes)
+			},
+			{
 				path: 'chat',
 				loadChildren: () =>
 					import('./features/chat/pages/chat.routes').then(m => m.routes)
 			},
 			{
 				path: '**',
-				redirectTo: 'chat'
+				redirectTo: 'posts'
 			}
 		]
 	},

@@ -1,11 +1,14 @@
 import { Component, ElementRef, Input, SimpleChanges, viewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LoaderComponent } from "../../../../shared/components/loader/loader.component";
+import { cacheMap } from '../../../../core/interceptors/cache.interceptor';
+import { environment } from '../../../../../environments/environment';
+import parseDate from '../../../../shared/utils/parseDate';
 
 @Component({
   selector: 'app-conversation',
@@ -16,7 +19,8 @@ import { LoaderComponent } from "../../../../shared/components/loader/loader.com
 export class ConversationComponent {
   constructor(
     private chatService: ChatService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   @Input() id!: string
@@ -33,20 +37,38 @@ export class ConversationComponent {
     message: new FormControl('')
   })
 
+  parseDate(dateStr: string) {
+    return parseDate(dateStr)
+  }
+
   async handleSubmit() {
     const message = this.form.get('message')?.value
-    if (!this.conversation?.id || !message) return
-    await this.chatService.sendMessage(this.conversation.id, message)
+    if (!this.conversation?.id || !message || !this.myUser?.id) return
+    try {
+      const response = await this.chatService.sendMessage(this.conversation.id, message)
+      if (response) {
+        cacheMap.delete(environment.apiUrl + '/conversation/' + this.id)
+        this.scrollReady = false
+        this.scrollToBottom()
+      }
+    } catch (error) {
+      console.error(error)
+    }
     this.form.reset()
   }
 
   async fetchData() {
-    this.conversation = undefined
-    this.myUser = await this.authService.getMyUser()
-    const conversation = await this.chatService.getConversation(parseInt(this.id))!
-    this.conversation = {
-      ...conversation,
-      users: conversation.users.filter(user => user.id !== this.myUser?.id)
+    try {
+      this.conversation = undefined
+      this.myUser = await this.authService.getMyUser()
+      const conversation = await this.chatService.getConversation(parseInt(this.id))!
+      this.conversation = {
+        ...conversation,
+        users: conversation.users.filter(user => user.id !== this.myUser?.id)
+      }
+    } catch (error) {
+      console.error(error)
+      this.router.navigate(['chat'])
     }
   }
 
@@ -79,5 +101,18 @@ export class ConversationComponent {
 
   ngAfterViewChecked() {
     this.scrollToBottom()
+  }
+
+  ngOnInit() {
+    this.chatService.observeMessages().subscribe((data: {type: string, message: Message}) => {
+      if (!this.conversation || data.message.conversationId !== parseInt(this.id)) return
+      cacheMap.delete(environment.apiUrl + '/conversation/' + this.id)
+      this.conversation.messages = [
+        ...this.conversation.messages || [],
+        data.message
+      ]
+      this.scrollReady = false
+      this.scrollToBottom()
+    })
   }
 }

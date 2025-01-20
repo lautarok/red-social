@@ -4,6 +4,14 @@
 			<span>{{myUser.givenName[0] + myUser.familyName[0]}}</span>
 		}
 	</button>
+	<nav>
+		<a routerLink='/posts'>
+			<app-icon set='home' size='22px' />
+		</a>
+		<a routerLink='/chat'>
+			<app-icon set='paper airplane' size='22px' />
+		</a>
+	</nav>
 </aside>
 @if (myUser) {
 	<app-dialog [show]='showMyUserDialog' width='400px'>

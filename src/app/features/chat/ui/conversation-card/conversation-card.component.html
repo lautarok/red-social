@@ -1,10 +1,15 @@
-<a [routerLink]='"/chat/" + conversation.id' class='conversation-card'>
+<a [routerLink]='"/chat/" + conversation.id' [class]='["conversation-card", selected ? "selected" : ""]'>
 	<div class='letter'>
 		<span>{{conversation.users[0].givenName[0] + conversation.users[0].familyName[0]}}</span>
 	</div>
 	<div class='text'>
 		<span>{{conversation.users[0].givenName}} {{conversation.users[0].familyName}}</span>
-		<span>Este es un mensaje de prueba uno dos tres</span>
-		<span>03:08</span>
+		@if (conversation.lastMessage) {
+			<span>{{conversation.lastMessage.text}}</span>
+			<span>{{parseDate(conversation.lastMessage.createdAt)}}</span>
+		} @else {
+			<span>Nueva conversación</span>
+			<span>{{parseDate(conversation.createdAt)}}</span>
+		}
 	</div>
 </a>

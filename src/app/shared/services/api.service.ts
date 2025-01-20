@@ -29,12 +29,6 @@ export class ApiService {
           return throwError(() => new Error(error.message))
         })
       ).subscribe((data: any) => {
-        if (data.createdAt) {
-          data.createdAt = new Date(data.createdAt)
-        }
-        if (data.updatedAt) {
-          data.updatedAt = new Date(data.updatedAt)
-        }
         resolve(data as T)
       })
     })

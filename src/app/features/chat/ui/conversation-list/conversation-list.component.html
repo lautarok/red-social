@@ -1,13 +1,21 @@
-@if (conversations) {
+@if (conversations && conversations.length > 0) {
 	<div class='conversation-list'>
 		@for (conversation of conversations; track $index) {
 			<app-conversation-card
 				[conversation]='conversation'
+				[selected]='conversation.id.toString() === selectedId'
 			/>
 		}
 	</div>
 } @else if (conversations === undefined) {
 	<div class='center'>
 		<app-loader [size]='50' />
+	</div>
+} @else {
+	<div class='empty'>
+		<span>No hay ninguna conversación</span>
+		<app-button (click)='addConversation.emit()' [style]='{transform: "scale(.8)"}' variant='primary' width='fit-content' [rounded]='true'>
+			<span>Iniciar conversación</span>
+		</app-button>
 	</div>
 }

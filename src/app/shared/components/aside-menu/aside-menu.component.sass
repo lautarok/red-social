@@ -8,6 +8,13 @@
 	flex-direction: column
 	gap: 25px
 	padding: 25px 15px
+	@media only screen and (max-width: 900px)
+		flex-direction: row
+		height: fit-content
+		width: 100%
+		padding: 15px
+		align-items: center
+		justify-content: space-between
 
 .my-user
 	width: 50px
@@ -20,6 +27,34 @@
 	cursor: pointer
 	user-select: none
 	-moz-user-select: none
+	@media only screen and (max-width: 900px)
+		width: 40px
+		height: 40px
+		font-size: 16px
+
+.aside-menu > nav
+	width: 100%
+	height: fit-content
+	display: flex
+	flex-direction: column
+	gap: 5px
+	align-items: center
+	@media only screen and (max-width: 900px)
+		flex-direction: row
+		width: fit-content
+
+.aside-menu > nav > a
+	width: 50px
+	height: 50px
+	display: flex
+	justify-content: center
+	align-items: center
+	color: #FFF
+	transition: background-color ease .2s
+	border-radius: 6px
+	@media (hover: hover) and (pointer: fine)
+		&:hover
+			background-color: rgba(255, 255, 255, 10%)
 
 .my-user-dialog-nav
 	width: 100%
@@ -27,3 +62,6 @@
 	display: flex
 	gap: 10px
 	align-items: center
+	@media only screen and (max-width: 900px)
+		flex-direction: column
+		align-items: stretch

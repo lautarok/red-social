@@ -20,6 +20,7 @@ export class AddConversationDialogComponent {
 
   @Input() show!: boolean
   showChange = output<boolean>()
+  onConversation = output<Conversation>()
 
   form = new FormGroup({
     email: new FormControl('', [
@@ -41,7 +42,10 @@ export class AddConversationDialogComponent {
     this.loading = true
     
     try {
-      await this.chatService.createConversation(this.form.get('email')?.value || '')
+      const response = await this.chatService.createConversation(this.form.get('email')?.value || '')
+      if (response) {
+        this.onConversation.emit(response)
+      }
     } catch (error: any) {
       if (error.status === 404) {
         this.error = 'No se ha encontrado el usuario'

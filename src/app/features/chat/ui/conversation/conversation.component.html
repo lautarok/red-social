@@ -13,7 +13,7 @@
 						<div [class]='["message", message.fromUserId === myUser?.id ? "from-me" : ""]'>
 							<div class='box'>
 								<p>{{message.text}}</p>
-								<p>{{message.createdAt}}</p>
+								<p>{{parseDate(message.createdAt)}}</p>
 							</div>
 						</div>
 					}
