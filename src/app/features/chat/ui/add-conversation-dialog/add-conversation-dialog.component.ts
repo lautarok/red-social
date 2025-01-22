@@ -6,6 +6,7 @@ import { IconComponent } from "../../../../shared/components/icon/icon.component
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { emailValidatorRegex } from '../../../../shared/utils/regex';
 import { ChatService } from '../../services/chat.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-conversation-dialog',
@@ -15,12 +16,12 @@ import { ChatService } from '../../services/chat.service';
 })
 export class AddConversationDialogComponent {
   constructor(
-    private chatService: ChatService
+    private chatService: ChatService,
+    private router: Router
   ) {}
 
   @Input() show!: boolean
   showChange = output<boolean>()
-  onConversation = output<Conversation>()
 
   form = new FormGroup({
     email: new FormControl('', [
@@ -44,13 +45,17 @@ export class AddConversationDialogComponent {
     try {
       const response = await this.chatService.createConversation(this.form.get('email')?.value || '')
       if (response) {
-        this.onConversation.emit(response)
+        this.showChange.emit(false)
+        this.form.reset()
+        this.loading = false
+        this.router.navigate(['chat', response.id])
       }
     } catch (error: any) {
       if (error.status === 404) {
         this.error = 'No se ha encontrado el usuario'
       } else if (error.status === 409) {
         this.error = 'Ya existe una conversación con este usuario'
+        this.form.reset()
       } else {
         this.error = 'Ha ocurrido un error desconocido'
       }

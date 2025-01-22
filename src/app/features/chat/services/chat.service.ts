@@ -19,11 +19,15 @@ export class ChatService {
   }
 
   getConversationList() {
-    return this.apiService.get<Conversation[]>('conversation')
+    return this.apiService.get<Conversation[]>('conversation', {
+      invalidateCache: true
+    })
   }
 
   getConversation(id: number) {
-    return this.apiService.get<Conversation>('conversation/' + id)
+    return this.apiService.get<Conversation>('conversation/' + id, {
+      invalidateCache: true
+    })
   }
 
   sendMessage(conversationId: number, message: string) {

@@ -1,8 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { CACHING_ENABLED } from '../../core/interceptors/cache.interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -17,12 +18,18 @@ export class ApiService {
     options?: {
       method?: 'GET' | 'POST' | 'PUT' | 'DELETE',
       headers?: HttpHeaders,
-      body?: Record<string, unknown>
+      body?: Record<string, unknown>,
+      invalidateCache?: boolean
     }
   ): Promise<T> | undefined {
     return new Promise((resolve, reject) => {
       this.httpClient.request(
-        options?.method || 'GET', environment.apiUrl + '/' + path, options
+        options?.method || 'GET',
+        environment.apiUrl + '/' + path,
+        {
+          ...options,
+          context: new HttpContext().set(CACHING_ENABLED, !!options?.invalidateCache)
+        }
       ).pipe(
         catchError((error: HttpErrorResponse) => {
           reject(error)
@@ -48,7 +55,9 @@ export class ApiService {
     })
   }
 
-  get<T>(path: string) {
-    return this.api<T>(path)
+  get<T>(path: string, options?: {
+    invalidateCache?: boolean
+  }) {
+    return this.api<T>(path, options)
   }
 }
