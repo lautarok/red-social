@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([
         authTokenInterceptor,
-        cacheInterceptor
+        //cacheInterceptor
       ])
     )
   ]

@@ -23,6 +23,27 @@ export class ConversationListComponent {
   myUser?: User
   conversations?: Conversation[]
 
+  private sortConversationList(conversationList: Conversation[]) {
+    return conversationList.sort((a, b) => {
+      let aValue = 0,
+        bValue = 0
+
+      if (a.lastMessage) {
+        aValue = new Date(a.lastMessage.createdAt).getTime()
+      } else {
+        aValue = new Date(a.createdAt).getTime()
+      }
+
+      if (b.lastMessage) {
+        bValue = new Date(b.lastMessage.createdAt).getTime()
+      } else {
+        bValue = new Date(b.createdAt).getTime()
+      }
+
+      return bValue - aValue
+    })
+  }
+
   async ngOnInit() {
     this.myUser = await this.authService.getMyUser()
 
@@ -40,13 +61,14 @@ export class ConversationListComponent {
 
     this.chatService.observeConversations().subscribe((data: {type: string, conversation: Conversation}) => {
       if (!this.conversations) return
-      this.conversations = [
+      const conversations = [
         ...this.conversations,
         {
           ...data.conversation,
           users: data.conversation.users.filter(user => user.id !== this.myUser?.id)
         }
       ]
+      this.conversations = this.sortConversationList(conversations)
     })
 
     this.chatService.observeMessages().subscribe((data: {type: string, message: Message}) => {
@@ -56,7 +78,7 @@ export class ConversationListComponent {
         .indexOf(data.message.conversationId)
 
       this.conversations[conversationIndex].lastMessage = data.message
-      this.conversations = this.conversations.sort((a, b) => (b.lastMessage?.id || 0) - (a.lastMessage?.id || 0))
+      this.conversations = this.sortConversationList(this.conversations)
     })
   }
 }

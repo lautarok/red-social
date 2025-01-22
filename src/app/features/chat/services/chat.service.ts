@@ -14,7 +14,7 @@ export class ChatService {
 
   createConversation(peopleEmail: string) {
     return this.apiService.post<Conversation>('conversation', {
-      id: peopleEmail
+      email: peopleEmail
     })
   }
 

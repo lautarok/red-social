@@ -24,7 +24,7 @@ export class AddConversationDialogComponent {
 
   form = new FormGroup({
     email: new FormControl('', [
-      Validators.pattern(/^\d+$/g)
+      Validators.pattern(emailValidatorRegex)
     ])
   })
 

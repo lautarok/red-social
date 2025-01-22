@@ -7,18 +7,24 @@
 			<span>{{conversation.users[0].givenName}} {{conversation.users[0].familyName}}</span>
 		</div>
 		<div class='messages'>
-			<div class='scroll-area' #messagesScroll>
-				<div class='wrapper' #messagesWrapper>
-					@for (message of conversation.messages; track $index) {
-						<div [class]='["message", message.fromUserId === myUser?.id ? "from-me" : ""]'>
-							<div class='box'>
-								<p>{{message.text}}</p>
-								<p>{{parseDate(message.createdAt)}}</p>
+			@if (conversation.messages && conversation.messages.length > 0) {
+				<div class='scroll-area' #messagesScroll>
+					<div class='wrapper' #messagesWrapper>
+						@for (message of conversation.messages; track $index) {
+							<div [class]='["message", message.fromUserId === myUser?.id ? "from-me" : ""]'>
+								<div class='box'>
+									<p>{{message.text}}</p>
+									<p>{{parseDate(message.createdAt)}}</p>
+								</div>
 							</div>
-						</div>
-					}
+						}
+					</div>
 				</div>
-			</div>
+			} @else {
+				<div class='center'>
+					<h2>Aún no hay mensajes</h2>
+				</div>
+			}
 		</div>
 		<form class='bottom' [formGroup]='form' (ngSubmit)='handleSubmit()'>
 			<input type='text' formControlName='message' />

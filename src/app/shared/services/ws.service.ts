@@ -1,27 +1,37 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
-  private subject = new Subject<any>
+  private subject = new ReplaySubject<any>()
   socket?: WebSocket
 
-  constructor() {
-    this.socket = new WebSocket(environment.apiUrl + '/ws?auth_token=' + localStorage.getItem('auth_token'))
+  private reconnect() {
+    window.location.reload()
+  }
+
+  disconnect() {
+    this.socket?.close()
+  }
+
+  connect(authToken: string) {
+    this.socket = new WebSocket(environment.apiUrl + '/ws?auth_token=' + authToken)
 
     this.socket.onmessage = event => {
       this.subject.next(event)
     }
 
-    this.socket.onclose = () => {
-      window.location.reload()
+    this.socket.onclose = event => {
+      if (!event.wasClean) {
+        this.reconnect()
+      }
     }
 
     this.socket.onerror = () => {
-      window.location.reload()
+      this.reconnect()
     }
   }
 

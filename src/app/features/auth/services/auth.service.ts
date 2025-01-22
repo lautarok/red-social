@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../../shared/services/api.service';
 import { Router } from '@angular/router';
 import { cacheMap, pendingRequests } from '../../../core/interceptors/cache.interceptor';
+import { WsService } from '../../../shared/services/ws.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,13 @@ import { cacheMap, pendingRequests } from '../../../core/interceptors/cache.inte
 export class AuthService {
   constructor(
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private wsService: WsService
   ) { }
 
   private sessionStart(response: any) {
     if (response.token) {
+      this.wsService.connect(response.token)
       localStorage.setItem('auth_token', response.token)
       this.router.navigate([''])
     }
@@ -52,6 +55,7 @@ export class AuthService {
     localStorage.removeItem('auth_token')
     cacheMap.clear()
     pendingRequests.clear()
+    this.wsService.disconnect()
     await this.router.navigate(['auth', 'login'])
   }
 
