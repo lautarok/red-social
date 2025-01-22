@@ -9,6 +9,13 @@ export class WsService {
   private subject = new ReplaySubject<any>()
   socket?: WebSocket
 
+  constructor() {
+    const authToken = localStorage.getItem('auth_token')
+    if (authToken) {
+      this.connect(authToken)
+    }
+  }
+
   private reconnect() {
     window.location.reload()
   }
