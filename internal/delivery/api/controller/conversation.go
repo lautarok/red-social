@@ -11,20 +11,22 @@ import (
 )
 
 type ConversationController struct {
-	service   *service.ConversationService
-	wsService *service.WSService
+	service     *service.ConversationService
+	wsService   *service.WSService
+	userService *service.UserService
 }
 
-func NewConversationController(service *service.ConversationService, wsService *service.WSService) *ConversationController {
+func NewConversationController(service *service.ConversationService, wsService *service.WSService, userService *service.UserService) *ConversationController {
 	return &ConversationController{
-		service:   service,
-		wsService: wsService,
+		service:     service,
+		wsService:   wsService,
+		userService: userService,
 	}
 }
 
 func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error {
 	body := struct {
-		ID string `json:"id"`
+		Email string `json:"email"`
 	}{}
 
 	if err := c.BodyParser(&body); err != nil {
@@ -33,19 +35,18 @@ func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error
 			"error": "wrong body",
 		})
 		return nil
-	} else if !util.ValidateID(body.ID) {
+	} else if !util.ValidateEmail(body.Email) {
 		c.Status(fiber.StatusBadRequest)
 		c.JSON(map[string]string{
-			"error": "wrong id",
+			"error": "wrong email",
 		})
 		return nil
 	}
 
-	id, _ := strconv.Atoi(body.ID)
-
+	myUserEmail := c.Locals("auth_user_email").(string)
 	myUserId := c.Locals("auth_user_id").(int64)
 
-	conversationId, err := controller.service.CreateConversation(myUserId, int64(id))
+	conversationId, err := controller.service.CreateConversation(myUserEmail, body.Email)
 	if err != nil {
 		if err == errors.UserNotFound {
 			c.Status(fiber.StatusNotFound)
@@ -71,8 +72,22 @@ func (controller *ConversationController) CreateConversation(c *fiber.Ctx) error
 		return nil
 	}
 
+	toUsersId, err := controller.userService.GetIDByEmail(body.Email)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
 	controller.wsService.Notify <- &service.WSNotify{
-		ToUserID: int64(id),
+		ToUserID: int64(toUsersId),
+		Data: map[string]interface{}{
+			"type":         "conversation",
+			"conversation": conversation,
+		},
+	}
+
+	controller.wsService.Notify <- &service.WSNotify{
+		ToUserID: myUserId,
 		Data: map[string]interface{}{
 			"type":         "conversation",
 			"conversation": conversation,

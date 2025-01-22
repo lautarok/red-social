@@ -51,7 +51,7 @@ func (repository *MessageRepository) CreateMessage(message *domain.Message) int6
 		Model((*domain.Conversation)(nil)).
 		Where("id = ?", message.ConversationID).
 		Set("last_message = ?", lastMessage).
-		Set("last_message_id = ?", lastMessage.ID).
+		Set("last_message_created_at = ?", lastMessage.CreatedAt).
 		Exec(context.Background())
 	if err != nil {
 		tx.Rollback()

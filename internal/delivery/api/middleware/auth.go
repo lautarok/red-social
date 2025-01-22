@@ -40,15 +40,18 @@ func (middleware *AuthMiddleware) IsUser(next fiber.Handler) fiber.Handler {
 		}
 
 		var id int64
+		var email string
 		token, _, err = new(jwt.Parser).ParseUnverified(authToken, jwt.MapClaims{})
 		if err != nil {
 			c.SendStatus(fiber.StatusUnauthorized)
 			return nil
 		} else if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			id = int64(claims["id"].(float64))
+			email = claims["email"].(string)
 		}
 
 		c.Locals("auth_user_id", id)
+		c.Locals("auth_user_email", email)
 
 		next(c)
 		return nil

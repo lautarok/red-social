@@ -80,7 +80,7 @@ func (repository *ConversationRepository) GetConversationList(userId int64, conv
 		Model(conversationList).
 		Join("JOIN user_conversations ON user_conversations.conversation_id = conversation.id").
 		Where("user_conversations.user_id = ?", userId).
-		OrderExpr("CASE WHEN last_message_id > 0 THEN last_message_id ELSE id END DESC").
+		OrderExpr("CASE WHEN last_message is not null THEN last_message_created_at ELSE created_at END DESC").
 		Relation("Users").
 		Scan(context.Background())
 }

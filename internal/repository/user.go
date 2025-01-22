@@ -41,6 +41,26 @@ func (repository *UserRepository) GetByEmail(email string, user *domain.User) {
 	}
 }
 
+func (repository *UserRepository) GetIDSByEmail(emails ...string) ([]int64, error) {
+	var ids []int64
+
+	var users []domain.User
+	err := repository.db.NewSelect().
+		Model(&users).
+		Where("email in (?)", bun.In(emails)).
+		Scan(context.Background())
+
+	if err != nil {
+		return ids, err
+	}
+
+	for _, user := range users {
+		ids = append(ids, user.ID)
+	}
+
+	return ids, nil
+}
+
 func (repository *UserRepository) CreateUser(user *domain.User) (int64, error) {
 	var insertedId int64
 

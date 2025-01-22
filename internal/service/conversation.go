@@ -7,17 +7,24 @@ import (
 )
 
 type ConversationService struct {
-	repository *repository.ConversationRepository
+	repository     *repository.ConversationRepository
+	userRepository *repository.UserRepository
 }
 
-func NewConversationService(repository *repository.ConversationRepository) *ConversationService {
+func NewConversationService(repository *repository.ConversationRepository, userRepository *repository.UserRepository) *ConversationService {
 	return &ConversationService{
-		repository: repository,
+		repository:     repository,
+		userRepository: userRepository,
 	}
 }
 
-func (service *ConversationService) CreateConversation(userIds ...int64) (int64, error) {
+func (service *ConversationService) CreateConversation(userEmails ...string) (int64, error) {
 	var conversationId int64
+
+	userIds, err := service.userRepository.GetIDSByEmail(userEmails...)
+	if err != nil {
+		return conversationId, err
+	}
 
 	if len(userIds) < 2 {
 		return conversationId, errors.UserNotFound
@@ -40,6 +47,9 @@ func (service *ConversationService) CreateConversation(userIds ...int64) (int64,
 			},
 		},
 	})
+	if err != nil {
+		return conversationId, err
+	}
 
 	service.repository.AppendUsersToConversation(conversationId, userIds...)
 
