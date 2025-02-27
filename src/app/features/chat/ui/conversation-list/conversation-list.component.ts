@@ -41,6 +41,8 @@ export class ConversationListComponent {
       }
 
       return bValue - aValue
+    }).filter((value, index, self) => {
+      return self.findIndex(conversation => conversation.id === value.id) === index
     })
   }
 

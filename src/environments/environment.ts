@@ -1,3 +1,3 @@
 export const environment = {
-	apiUrl: 'http://localhost:8080/api/v1'
+	apiUrl: 'https://lautarok.duckdns.org:8080'
 };

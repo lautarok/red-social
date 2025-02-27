@@ -1,0 +1,51 @@
+.layout
+    width: 100%
+    height: 100%
+    display: grid
+    grid-template-columns: repeat(2, 1fr)
+    grid-template-rows: 100%
+
+.catalog
+    width: 100%
+    height: 100%
+    overflow: auto
+    background-color: #111
+    border-right: solid 1px #222
+
+.catalog > .head
+    width: 100%
+    padding: 25px
+    background-color: #0A0A0A
+    border-bottom: solid 1px #222
+    display: flex
+    align-items: center
+    justify-content: space-between
+    gap: 15px
+
+.catalog > .head > .searcher
+    width: 100%
+    display: flex
+    align-items: flex-end
+    gap: 15px
+
+.checkout
+    width: 100%
+    height: 100%
+    display: grid
+    grid-template-columns: 1fr
+    grid-template-rows: 100% auto
+
+.checkout > .center
+    width: 100%
+    height: 100%
+    display: flex
+    justify-content: center
+    align-items: center
+    flex-direction: column
+
+.checkout > .center > span:first-child
+    font-size: 52px
+
+.checkout > .center > span:last-child
+    font-size: 20px
+    margin-top: 20px

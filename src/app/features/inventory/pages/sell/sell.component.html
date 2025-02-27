@@ -1,0 +1,19 @@
+<main class='layout'>
+    <div class='catalog'>
+        <div class="head">
+            <div class="searcher">
+                <app-text-field label='Buscá por nombre o código' />
+                <app-button>Buscar</app-button>
+            </div>
+        </div>
+    </div>
+    <div class="checkout">
+        <div class="center">
+            <span>{{(1000).toLocaleString('es-AR', {
+                style: 'currency',
+                currency: 'ARS'
+            })}}</span>
+            <span>Precio total</span>
+        </div>
+    </div>
+</main>

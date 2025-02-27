@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
-  private subject = new Subject<any>()
+  private subject = new ReplaySubject<any>()
   socket?: WebSocket
 
   constructor() {
